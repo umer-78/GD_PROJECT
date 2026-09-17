@@ -18,6 +18,7 @@ public class PlayerHealth : MonoBehaviour
 
     private UIManager uiManager;      // Reference to UI Manager for health bar updates
     private AudioManager audioManager;
+    private bool isDead = false;      // Die() used to run again on every hit taken at 0 health
 
 
     private void Awake()
@@ -41,19 +42,17 @@ public class PlayerHealth : MonoBehaviour
         UpdateUI();
     }
 
+    // Kept for existing callers; goes through the same path as TakeDamage so
+    // health can no longer drop below zero without the player dying.
     public void DecreaseHealth(int damage)
     {
-        currentHealth -= damage;
-        if (currentHealth <= 0)
-        {
-            // Trigger Game Over logic here.
-            Debug.Log("Player Health reached 0. Game Over.");
-        }
+        TakeDamage(damage);
     }
 
     public void TakeDamage(int damage)
     {
-        uiManager.ShowDamageFlash();
+        if (isDead) return;
+        if (uiManager != null) uiManager.ShowDamageFlash();
         if (isShielded)
         {
             Debug.Log("Shield active! No damage taken.");
@@ -85,6 +84,7 @@ public class PlayerHealth : MonoBehaviour
 
     public void Heal(int amount)
     {
+        if (isDead) return;
         currentHealth += amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // Ensure health stays within bounds
 
@@ -105,13 +105,20 @@ public class PlayerHealth : MonoBehaviour
 
     private void Die()
     {
+        if (isDead) return;
+        isDead = true;
         Debug.Log("Player has died!");
-        animator.SetBool("isDead", true);
-        Invoke("GameOver", 2f);
+        if (animator != null) animator.SetBool("isDead", true);
+        Invoke(nameof(GameOver), 2f);
     }
     private void GameOver()
     {
-        GameManager.Instance.GameOver();
+        if (GameManager.Instance != null) GameManager.Instance.GameOver();
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this) Instance = null;
     }
 
     private void UpdateUI()

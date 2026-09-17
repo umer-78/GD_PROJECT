@@ -12,8 +12,6 @@ public class Bullet : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-
-        Debug.Log("Collided with player");
         // Check if the bullet hit the player
         if (collision.gameObject.CompareTag("Player"))
         {

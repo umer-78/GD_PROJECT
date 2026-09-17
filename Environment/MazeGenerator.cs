@@ -19,17 +19,31 @@ public class MazeGenerator : MonoBehaviour
     public int level = 0;
 
     private int[,] maze;                  // 2D array to store maze structure
+    private int baseWidth, baseHeight, baseTraps, baseCoins;
+    private bool basesCaptured = false;
+
     private void Start()
     {
         GenerateMaze(level);
     }
+
     public void GenerateMaze(int level)
     {
-        // Adjust maze size and difficulty based on level
-        width += level * 2;               // Increase maze size per level
-        height += level * 2;
-        trapCount += level;               // Add more traps as levels increase
-        coinCount += level * 2;
+        // Sizes are derived from the Inspector values each time. They used to be
+        // added onto the previous call's result, so regenerating grew the maze
+        // on every call.
+        if (!basesCaptured)
+        {
+            baseWidth = width; baseHeight = height; baseTraps = trapCount; baseCoins = coinCount;
+            basesCaptured = true;
+        }
+        ClearMaze();
+
+        // Adjust maze size and difficulty based on level; odd sizes keep a wall border
+        width = Mathf.Max(5, baseWidth + level * 2) | 1;
+        height = Mathf.Max(5, baseHeight + level * 2) | 1;
+        trapCount = baseTraps + level;    // Add more traps as levels increase
+        coinCount = baseCoins + level * 2;
 
         // Initialize the maze
         maze = new int[width, height];
@@ -53,23 +67,35 @@ public class MazeGenerator : MonoBehaviour
             }
         }
 
-        // Create a simple open path for the maze
-        for (int x = 1; x < width - 1; x += 2)
+        // Carve a perfect maze (recursive backtracker) so every open cell -
+        // coins and the exit included - can be reached. The old random carving
+        // often left coins sealed off, which made a level impossible to finish.
+        var stack = new System.Collections.Generic.Stack<Vector2Int>();
+        var start = new Vector2Int(1, 1);
+        maze[start.x, start.y] = 0;
+        stack.Push(start);
+        Vector2Int[] dirs = { new Vector2Int(2, 0), new Vector2Int(-2, 0), new Vector2Int(0, 2), new Vector2Int(0, -2) };
+        while (stack.Count > 0)
         {
-            for (int y = 1; y < height - 1; y += 2)
+            Vector2Int cell = stack.Peek();
+            var options = new System.Collections.Generic.List<Vector2Int>();
+            foreach (Vector2Int d in dirs)
             {
-                maze[x, y] = 0; // 0 represents a path
-                if (Random.value > 0.5f)
+                Vector2Int n = cell + d;
+                if (n.x > 0 && n.x < width - 1 && n.y > 0 && n.y < height - 1 && maze[n.x, n.y] == 1)
                 {
-                    int randX = Random.Range(-1, 2) * 2;
-                    int randY = Random.Range(-1, 2) * 2;
-
-                    if (x + randX > 0 && x + randX < width - 1 && y + randY > 0 && y + randY < height - 1)
-                    {
-                        maze[x + randX / 2, y + randY / 2] = 0;
-                    }
+                    options.Add(n);
                 }
             }
+            if (options.Count == 0)
+            {
+                stack.Pop();
+                continue;
+            }
+            Vector2Int next = options[Random.Range(0, options.Count)];
+            maze[(cell.x + next.x) / 2, (cell.y + next.y) / 2] = 0;
+            maze[next.x, next.y] = 0;
+            stack.Push(next);
         }
     }
 
@@ -95,7 +121,7 @@ public class MazeGenerator : MonoBehaviour
     {
         for (int i = 0; i < trapCount; i++)
         {
-            Vector2Int position = GetRandomEmptyCell();
+            if (!TryGetRandomEmptyCell(out Vector2Int position)) break;
             Instantiate(trapPrefab, new Vector3(position.x, 0.5f, position.y), Quaternion.identity, transform);
         }
     }
@@ -104,37 +130,45 @@ public class MazeGenerator : MonoBehaviour
     {
         for (int i = 0; i < coinCount; i++)
         {
-            Vector2Int position = GetRandomEmptyCell();
+            if (!TryGetRandomEmptyCell(out Vector2Int position)) break;
             Instantiate(coinPrefab, new Vector3(position.x, 0.5f, position.y), Quaternion.identity, transform);
         }
     }
 
     private void PlaceExit()
     {
-        Vector2Int exitPosition = GetRandomEmptyCell();
+        if (!TryGetRandomEmptyCell(out Vector2Int exitPosition)) return;
         Instantiate(exitPrefab, new Vector3(exitPosition.x, 0.5f, exitPosition.y), Quaternion.identity, transform);
     }
 
-    private Vector2Int GetRandomEmptyCell()
+    // The old version looped forever (freezing Unity) once every open cell was
+    // taken, e.g. many coins in a small maze. This one picks from the free cells.
+    private bool TryGetRandomEmptyCell(out Vector2Int cell)
     {
-        while (true)
+        var free = new System.Collections.Generic.List<Vector2Int>();
+        for (int x = 1; x < width - 1; x++)
         {
-            int x = Random.Range(1, width - 1);
-            int y = Random.Range(1, height - 1);
-
-            if (maze[x, y] == 0)
+            for (int y = 1; y < height - 1; y++)
             {
-                maze[x, y] = 2; // Mark as occupied
-                return new Vector2Int(x, y);
+                if (maze[x, y] == 0 && !(x == 1 && y == 1)) free.Add(new Vector2Int(x, y)); // keep the start cell clear
             }
         }
+        if (free.Count == 0)
+        {
+            Debug.LogWarning("MazeGenerator: no free cells left for more objects.");
+            cell = default;
+            return false;
+        }
+        cell = free[Random.Range(0, free.Count)];
+        maze[cell.x, cell.y] = 2; // Mark as occupied
+        return true;
     }
 
     public void ClearMaze()
     {
-        foreach (Transform child in transform)
+        for (int i = transform.childCount - 1; i >= 0; i--)
         {
-            Destroy(child.gameObject); // Clear previously generated maze
+            Destroy(transform.GetChild(i).gameObject); // Clear previously generated maze
         }
     }
 }

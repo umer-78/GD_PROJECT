@@ -5,7 +5,7 @@ public class CoinManager : MonoBehaviour
     public static CoinManager Instance; // Singleton for global access
 
     [Header("Coin Settings")]
-    public int totalCoins; // Total coins in the level
+    public int totalCoins; // Coins still left in the level
     public int collectedCoins; // Coins collected by the player
 
     [Header("Effects")]
@@ -23,6 +23,7 @@ public class CoinManager : MonoBehaviour
 
     private UIManager uiManager; // Reference to update the UI
     private AudioManager audioManager;
+    private bool doorOpened = false;
 
     void Awake()
     {
@@ -34,6 +35,15 @@ public class CoinManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            return;
+        }
+
+        // Counted here rather than in Start so the number is ready before any
+        // other script's Start (UIManager reads it) runs.
+        if (coinContainer != null)
+        {
+            totalCoins = coinContainer.transform.childCount;
+            Debug.Log($"Total Coins: {totalCoins}");
         }
     }
 
@@ -43,21 +53,25 @@ public class CoinManager : MonoBehaviour
         audioManager = FindObjectOfType<AudioManager>();
         targetRotation = Quaternion.Euler(-90, 0, -90);
 
-        // Count the coins by checking the number of children in the coin container
-        if (coinContainer != null)
-        {
-            totalCoins = coinContainer.transform.childCount;
-            Debug.Log($"Total Coins: {totalCoins}");
-        }
-
         // Update UI at the start of the game
         UpdateUI();
     }
 
-    public void CollectCoin(GameObject coin)
+    /// <summary>Returns true if the coin was counted (false if it was already picked up).</summary>
+    public bool CollectCoin(GameObject coin)
     {
+        // A player with more than one collider can enter the same trigger twice in
+        // one frame, and Destroy() only happens at the end of the frame, so the same
+        // coin used to be counted twice. Switching its collider off marks it as taken.
+        Collider coinCollider = coin.GetComponent<Collider>();
+        if (coinCollider != null)
+        {
+            if (!coinCollider.enabled) return false;
+            coinCollider.enabled = false;
+        }
+
         collectedCoins++;
-        totalCoins--; // Decrease remaining coins
+        totalCoins = Mathf.Max(0, totalCoins - 1); // Decrease remaining coins
         UpdateUI();
 
         // Play sound effect
@@ -71,7 +85,7 @@ public class CoinManager : MonoBehaviour
         {
             Instantiate(coinPickupEffect, coin.transform.position, Quaternion.identity);
         }
-        uiManager.UpdateScore(100);
+        if (uiManager != null) uiManager.UpdateScore(100);
         // Destroy the collected coin
         Destroy(coin);
 
@@ -80,6 +94,7 @@ public class CoinManager : MonoBehaviour
         {
             LevelComplete();
         }
+        return true;
     }
 
     private void UpdateUI()
@@ -92,12 +107,19 @@ public class CoinManager : MonoBehaviour
 
     private void LevelComplete()
     {
+        if (doorOpened) return;
+        doorOpened = true;
         Debug.Log("All coins collected! Gateway Opened.");
         RotateDoorSmoothly();
     }
     // Function to call for smooth rotation
     public void RotateDoorSmoothly()
     {
+        if (door == null)
+        {
+            Debug.LogWarning("CoinManager: no door assigned, nothing to open.");
+            return;
+        }
         StartCoroutine(RotateDoorCoroutine());
     }
 
@@ -118,5 +140,10 @@ public class CoinManager : MonoBehaviour
 
         // Ensure the door reaches the exact target rotation
         door.rotation = targetRotation;
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this) Instance = null;
     }
 }

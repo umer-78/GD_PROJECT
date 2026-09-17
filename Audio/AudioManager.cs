@@ -19,7 +19,7 @@ public class AudioManager : MonoBehaviour
     void Awake()
     {
         // Singleton pattern to ensure only one AudioManager exists
-        if (instance == null)
+        if (instance == null || instance == this)
         {
             instance = this;
             DontDestroyOnLoad(gameObject); // Persist across scenes
@@ -86,7 +86,10 @@ public class AudioManager : MonoBehaviour
 
     public void PlaySound(AudioClip clip)
     {
-        soundEffectSource.PlayOneShot(clip);
+        if (clip == null) return;
+        // fall back to the effects source; either may be unassigned in a scene
+        AudioSource source = soundEffectSource != null ? soundEffectSource : effectsSource;
+        if (source != null) source.PlayOneShot(clip);
     }
 
     public void PlayGameOverSound()

@@ -6,29 +6,42 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Movement Settings")]
     public float moveSpeed = 5f;
-    public float rotationSpeed = 720f;
+    public float rotationSpeed = 720f;  // degrees per second
     public bool isShielded;
 
     [Header("Interaction")]
     public int coinsCollected = 0;
 
+    [Header("Debug")]
+    public bool logMovement = false;    // per-frame logging slowed the editor to a crawl
+
     public CinemachineVirtualCamera virtualCamera;
-    private Transform cameraTransform;
     private CinemachineTransposer transposer;
     private Rigidbody rb;
     public Animator animator;
+    private Vector3 wantedVelocity;
 
     void Start()
     {
-        isShielded = PlayerHealth.Instance.isShielded;
-        cameraTransform = virtualCamera.transform;
-        transposer = virtualCamera.GetCinemachineComponent<CinemachineTransposer>();
+        if (PlayerHealth.Instance != null) isShielded = PlayerHealth.Instance.isShielded;
+        if (virtualCamera != null)
+        {
+            transposer = virtualCamera.GetCinemachineComponent<CinemachineTransposer>();
+        }
         rb = GetComponent<Rigidbody>();
     }
 
     void Update()
     {
         HandleMovement();
+    }
+
+    // Physics velocity is applied in FixedUpdate so movement speed does not
+    // depend on the frame rate.
+    void FixedUpdate()
+    {
+        if (rb == null) return;
+        rb.velocity = new Vector3(wantedVelocity.x, rb.velocity.y, wantedVelocity.z);
     }
 
     void HandleMovement()
@@ -40,42 +53,41 @@ public class PlayerController : MonoBehaviour
 
         if (direction.magnitude > 0.1f)
         {
-            // Calculate the target angle based on the player's movement direction
+            // Turn toward the movement direction at rotationSpeed degrees per second.
+            // (LerpAngle with deltaTime * 720 clamped to 1 every frame, so the
+            // player snapped instantly and rotationSpeed did nothing.)
             float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
-            float smoothAngle = Mathf.LerpAngle(transform.eulerAngles.y, targetAngle, Time.deltaTime * rotationSpeed);
+            float smoothAngle = Mathf.MoveTowardsAngle(transform.eulerAngles.y, targetAngle, rotationSpeed * Time.deltaTime);
             transform.rotation = Quaternion.Euler(0, smoothAngle, 0);
 
             // Calculate the movement direction
             Vector3 moveDir = Quaternion.Euler(0, targetAngle, 0) * Vector3.forward;
-
-            // Update velocity
-            rb.velocity = new Vector3(moveDir.x * moveSpeed, rb.velocity.y, moveDir.z * moveSpeed);
+            wantedVelocity = moveDir * moveSpeed;
 
             // Update camera offset (z value) based on movement direction
-            if (vertical > 0) // Moving forward
+            if (transposer != null)
             {
-                transposer.m_FollowOffset.z = -5f; // Negative offset (camera behind player)
-            }
-            else if (vertical < 0) // Moving backward
-            {
-                transposer.m_FollowOffset.z = 5f; // Positive offset (camera in front of player)
+                if (vertical > 0) // Moving forward
+                {
+                    transposer.m_FollowOffset.z = -5f; // Negative offset (camera behind player)
+                }
+                else if (vertical < 0) // Moving backward
+                {
+                    transposer.m_FollowOffset.z = 5f; // Positive offset (camera in front of player)
+                }
             }
 
-            // Debug movement calculations
-            Debug.Log($"TargetAngle: {targetAngle}, SmoothAngle: {smoothAngle}, MoveDir: {moveDir}");
+            if (logMovement) Debug.Log($"TargetAngle: {targetAngle}, SmoothAngle: {smoothAngle}, MoveDir: {moveDir}");
 
-            animator.SetBool("isRunning", true);
+            if (animator != null) animator.SetBool("isRunning", true);
         }
         else
         {
-            rb.velocity = new Vector3(0, rb.velocity.y, 0);
-            animator.SetBool("isRunning", false);
+            wantedVelocity = Vector3.zero;
+            if (animator != null) animator.SetBool("isRunning", false);
 
             // Reset camera offset to default
-            transposer.m_FollowOffset.z = -5f; // Default offset behind the player
-
-            // Debug idle state
-            Debug.Log("Idle state - Velocity set to zero.");
+            if (transposer != null) transposer.m_FollowOffset.z = -5f; // Default offset behind the player
         }
     }
 
@@ -83,12 +95,14 @@ public class PlayerController : MonoBehaviour
     {
         if (other.CompareTag("Coin"))
         {
-            coinsCollected++;
-            CoinManager.Instance.CollectCoin(other.gameObject);
+            if (CoinManager.Instance != null && CoinManager.Instance.CollectCoin(other.gameObject))
+            {
+                coinsCollected++;
+            }
         }
         else if(other.CompareTag("END"))
         {
-            GameManager.Instance.Victory();
+            if (GameManager.Instance != null) GameManager.Instance.Victory();
         }
         //else if (other.CompareTag("Trap"))
         //{
@@ -106,7 +120,7 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        if (!isShielded)
+        if (!isShielded && PlayerHealth.Instance != null)
         {
             PlayerHealth.Instance.TakeDamage(damage);
         }
