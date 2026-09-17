@@ -26,8 +26,16 @@ public class EnemyController : MonoBehaviour
 
     private void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+        if (playerObject == null)
+        {
+            Debug.LogWarning($"{name}: no object tagged Player; enemy disabled.");
+            enabled = false;
+            return;
+        }
+        player = playerObject.transform;
         navAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        if (patrolPoints == null) patrolPoints = new Transform[0];
 
         if (patrolPoints.Length > 0)
         {
@@ -37,6 +45,7 @@ public class EnemyController : MonoBehaviour
 
     private void Update()
     {
+        if (player == null) return;
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
         if (IsPlayerInFieldOfView(distanceToPlayer))
@@ -44,7 +53,7 @@ public class EnemyController : MonoBehaviour
             if (!isAttacking)
             {
                 isAttacking = true;
-                navAgent.isStopped = true; // Stop movement
+                if (navAgent != null) navAgent.isStopped = true; // Stop movement
                 Invoke(nameof(StartAttacking), attackCooldown);
             }
         }
@@ -53,8 +62,9 @@ public class EnemyController : MonoBehaviour
             if (isAttacking)
             {
                 isAttacking = false;
+                CancelInvoke(nameof(StartAttacking)); // player left before the first shot
                 StopAttacking();
-                navAgent.isStopped = false; // Resume movement
+                if (navAgent != null) navAgent.isStopped = false; // Resume movement
                 SetPatrolDestination();
             }
 
@@ -69,12 +79,20 @@ public class EnemyController : MonoBehaviour
         Vector3 directionToPlayer = (player.position - transform.position).normalized;
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
 
-        return angleToPlayer <= fieldOfViewAngle;
+        if (angleToPlayer > fieldOfViewAngle) return false;
+
+        // Enemies used to see and shoot through maze walls. Require a clear line.
+        Vector3 eye = bulletSpawnPoint != null ? bulletSpawnPoint.position : transform.position + Vector3.up;
+        if (Physics.Raycast(eye, (player.position - eye).normalized, out RaycastHit hit, detectionRange, ~0, QueryTriggerInteraction.Ignore))
+        {
+            return hit.transform == player || hit.transform.IsChildOf(player);
+        }
+        return true;
     }
 
     private void Patrol()
     {
-        if (patrolPoints.Length == 0) return;
+        if (patrolPoints.Length == 0 || navAgent == null || !navAgent.isOnNavMesh) return;
 
         if (!navAgent.pathPending && navAgent.remainingDistance < 0.5f)
         {
@@ -91,7 +109,7 @@ public class EnemyController : MonoBehaviour
 
     private void SetPatrolDestination()
     {
-        if (patrolPoints.Length > 0)
+        if (patrolPoints.Length > 0 && navAgent != null && navAgent.isOnNavMesh && patrolPoints[currentPatrolIndex] != null)
         {
             navAgent.SetDestination(patrolPoints[currentPatrolIndex].position);
         }
@@ -112,13 +130,25 @@ public class EnemyController : MonoBehaviour
 
     private void FireBullet()
     {
-        if (player == null || PlayerHealth.Instance.currentHealth <= 0)
+        if (player == null || PlayerHealth.Instance == null || PlayerHealth.Instance.currentHealth <= 0)
+        {
+            StopAttacking();
             return;
+        }
 
         if (bulletPrefab != null && bulletSpawnPoint != null)
         {
-            AudioManager.Instance.PlaySoundEffect(bulletaudio);
+            if (AudioManager.Instance != null) AudioManager.Instance.PlaySoundEffect(bulletaudio);
             GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, bulletSpawnPoint.rotation);
+            // stop the bullet colliding with the enemy that fired it
+            Collider bulletCollider = bullet.GetComponent<Collider>();
+            if (bulletCollider != null)
+            {
+                foreach (Collider own in GetComponentsInChildren<Collider>())
+                {
+                    Physics.IgnoreCollision(bulletCollider, own);
+                }
+            }
             Rigidbody rb = bullet.GetComponent<Rigidbody>();
 
             if (rb != null)

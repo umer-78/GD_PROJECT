@@ -21,7 +21,7 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         UpdateScore(score);                      // Initialize the score display
-        UpdateCoinUI(CoinManager.Instance.totalCoins);
+        if (CoinManager.Instance != null) UpdateCoinUI(CoinManager.Instance.totalCoins);
         if (damageFlash != null)
             damageFlash.SetActive(false);    // Ensure damage flash is off at start
     }
@@ -45,16 +45,18 @@ public class UIManager : MonoBehaviour
 
     public void ShowDamageFlash()
     {
-        if (damageFlash != null)
+        if (damageFlash != null && isActiveAndEnabled)
         {
-            StartCoroutine(DamageFlashRoutine());
+            StopCoroutine(nameof(DamageFlashRoutine));
+            StartCoroutine(nameof(DamageFlashRoutine));
         }
     }
 
     private System.Collections.IEnumerator DamageFlashRoutine()
     {
         damageFlash.SetActive(true);
-        yield return new WaitForSeconds(flashDuration);
+        // realtime: with the game paused (timeScale 0) the flash never cleared
+        yield return new WaitForSecondsRealtime(flashDuration);
         damageFlash.SetActive(false);
     }
 
@@ -67,22 +69,22 @@ public class UIManager : MonoBehaviour
     }
     public void UpdateCoinUI(int coinCount)
     {
-        coinText.text = $"Coins: {coinCount}";
+        if (coinText != null) coinText.text = $"Coins: {coinCount}";
     }
 
     public void ShowGameOverScreen()
     {
-        GameManager.Instance.isGameOver = true;
-        gameOverScreen.SetActive(true);
+        if (GameManager.Instance != null) GameManager.Instance.isGameOver = true;
+        if (gameOverScreen != null) gameOverScreen.SetActive(true);
     }
 
     public void ShowPauseMenu()
     {
-        pauseMenu.SetActive(true);
+        if (pauseMenu != null) pauseMenu.SetActive(true);
     }
 
     public void HidePauseMenu()
     {
-        pauseMenu.SetActive(false);
+        if (pauseMenu != null) pauseMenu.SetActive(false);
     }
 }

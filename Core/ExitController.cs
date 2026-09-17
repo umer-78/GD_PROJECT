@@ -36,6 +36,13 @@ public class ExitController : MonoBehaviour
         }
 
         // Notify LevelManager to complete the level
-        LevelManager.Instance.CompleteLevel();
+        if (LevelManager.Instance != null)
+        {
+            LevelManager.Instance.CompleteLevel();
+        }
+        else
+        {
+            Debug.LogWarning("ExitController: no LevelManager in this scene.");
+        }
     }
 }
