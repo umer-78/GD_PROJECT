@@ -76,3 +76,4 @@ crashlytics-build.properties
 .DS_Store
 *.manifest.json.backup
 Packages/manifest.json.backup
+.vscode/
