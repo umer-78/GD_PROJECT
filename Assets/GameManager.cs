@@ -13,7 +13,8 @@ public class GameManager : MonoBehaviour
     [Header("Game States")]
     public bool isGamePaused = false;   // Check if the game is paused
     public int currentLevel = 0;       // Level number, read from the scene name (Level1 -> 1)
-    public int maxLevels = 3;          // Total number of levels
+    // Total levels is discovered from build settings by LevelManager; there is no
+    // separate maxLevels field here to keep in sync.
 
     public bool isGameOver = false;
 

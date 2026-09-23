@@ -1,43 +1,41 @@
 # GD_PROJECT: 3D Maze Game (Unity)
 
-A 3D maze game built in Unity with C#. You move through generated mazes, collect coins
-and power-ups, avoid traps and enemies, and reach the exit to clear the level.
+A 3D maze game built in Unity 2019.4 with C#. Move through levels, collect every coin to
+open the exit door, avoid enemies, and reach the exit to clear the level.
 
 ## Features
 
-- **Procedural mazes:** `MazeGenerator.cs` builds walls, paths, obstacles and traps at runtime
-- **Enemies:** NavMesh-driven enemies that shoot at the player (`EnemyController.cs`, `Bullet.cs`)
+- **5 hand-authored levels** plus a main menu (Level1–Level5 are in Build Settings)
+- **Enemies:** NavMesh-driven guards that patrol and shoot (`EnemyController.cs`, `Bullet.prefab`)
 - **Player:** physics-based movement and health (`PlayerController.cs`, `PlayerHealth.cs`)
-- **Collectibles:** coins (`CoinManager.cs`) and power-ups (`PowerUpManager.cs`)
-- **Game flow:** singleton `GameManager` for start, pause, game over, victory and level transitions
+- **Collectibles:** coins open the exit door when all are collected (`CoinManager.cs`)
+- **Power-ups:** speed boost and shield (`PowerUpManager.cs`)
+- **Game flow:** `GameManager` for pause / game over / victory; `LevelManager` for level progression
 - **UI:** HUD, pause, game-over and victory panels (`UIManager.cs`)
 - **Audio:** persistent background music and sound effects (`AudioManager.cs`)
-- **Levels:** main menu plus 5 level scenes
+- **Optional procedural mode:** attach `MazeGenerator` to generate mazes at runtime
 
 ## Repository layout
 
-This repository contains the contents of the Unity project's `Assets/` folder:
-
 | Folder | Contents |
 |---|---|
-| `Core/` | Gameplay scripts (player, enemies, coins, power-ups, levels, menu) |
-| `Environment/` | Maze generation and obstacles |
-| `UI/` | UI manager and panel prefabs |
-| `Audio/` | Audio manager |
-| `Scenes/` | `MainMenu` and `Level1`–`Level5` |
-| `Materials/` | Materials, physics material and textures |
-| `GameManager.cs` | Top-level game state |
+| `Assets/Core/` | Gameplay scripts |
+| `Assets/Environment/` | Maze generation and obstacles |
+| `Assets/UI/` | UI manager and panel prefabs |
+| `Assets/Audio/` | Audio manager |
+| `Assets/Prefabs/` | Wall, Coin, Guard, door, Floor, Bullet, Player model |
+| `Assets/Scenes/` | `MainMenu` and `Level1`–`Level5` |
+| `Assets/Materials/` | Materials, physics material and textures |
 
-Design notes: [Project Structure](Project%20Structure.md) · [Hierarchy Structure](Hierarchy%20Structure.md) · [Core scripts](Core/Scripts%20Details.md)
+Design notes: [Project Structure](Project%20Structure.md) · [Hierarchy Structure](Assets/Hierarchy%20Structure.md) · [Core scripts](Assets/Core/Scripts%20Details.md)
 
 ## Running it
 
-1. Create a new 3D project in Unity Hub.
-2. Copy this repository's contents into the project's `Assets/` folder.
-3. Install **TextMesh Pro** when Unity prompts you.
-4. Install **Cinemachine** from the Package Manager (the player camera uses it).
-5. Add `MainMenu` and `Level1`–`Level5` to **File → Build Settings** in that order.
-6. Open `Scenes/MainMenu.unity` and press Play.
+1. Open this folder as a Unity project (Unity 2019.4.x).
+2. Let the Package Manager resolve Cinemachine and TextMesh Pro.
+3. Open `Assets/Scenes/MainMenu.unity` and press Play.
+
+Build Settings already list MainMenu and Level1–Level5 in order.
 
 ## Controls
 
@@ -46,8 +44,8 @@ Design notes: [Project Structure](Project%20Structure.md) · [Hierarchy Structur
 | WASD / arrow keys | Move |
 | Esc | Pause / resume |
 
-Collect every coin to open the exit door, then reach the exit to finish the level.
+Collect every coin to open the exit door, then walk into the exit to finish the level.
 
-> Some third-party asset packs referenced by `.meta` files (for example `JMO Assets`,
-> `ManNeko_Assets`, `VolumetricLines`, `Laser Weapons Sound Pack`) are not included.
-> Re-import them from the Unity Asset Store for the full visuals and sound.
+> Audio clips, particle effects and some third-party art packs are not shipped in this
+> repository. Null references are handled at runtime; re-import packs from the Asset Store
+> for full visuals and sound.

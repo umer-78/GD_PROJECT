@@ -25,7 +25,8 @@ public class DontDestroyOnLoad : MonoBehaviour
         }
         else
         {
-            // Set the tag to "BackgroundMusic" (optional, for scene search purposes)
+            // Tag "BackgroundMusic" is defined in TagManager for scene search.
+            // Setting it here is safe now that the tag exists.
             gameObject.tag = "BackgroundMusic";
 
             // Prevent this GameObject from being destroyed on scene load

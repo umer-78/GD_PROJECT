@@ -16,7 +16,8 @@ and power-ups, avoid traps and enemies, and reach the exit to clear the level.
 
 ## Repository layout
 
-This repository contains the contents of the Unity project's `Assets/` folder:
+This folder is the Unity project's `Assets/` directory (see the
+[root README](../README.md) for the full project):
 
 | Folder | Contents |
 |---|---|
@@ -28,16 +29,13 @@ This repository contains the contents of the Unity project's `Assets/` folder:
 | `Materials/` | Materials, physics material and textures |
 | `GameManager.cs` | Top-level game state |
 
-Design notes: [Project Structure](Project%20Structure.md) · [Hierarchy Structure](Hierarchy%20Structure.md) · [Core scripts](Core/Scripts%20Details.md)
+Design notes: [Project Structure](Project%20Structure.md) · [Hierarchy Structure](Hierarchy%20Structure.md) · [Core scripts](Core/Scripts%20Details.md) · [Full project tree](../Project%20Structure.md)
 
 ## Running it
 
-1. Create a new 3D project in Unity Hub.
-2. Copy this repository's contents into the project's `Assets/` folder.
-3. Install **TextMesh Pro** when Unity prompts you.
-4. Install **Cinemachine** from the Package Manager (the player camera uses it).
-5. Add `MainMenu` and `Level1`–`Level5` to **File → Build Settings** in that order.
-6. Open `Scenes/MainMenu.unity` and press Play.
+1. Open the repository root as a Unity project (Unity 2019.4.x).
+2. Let Package Manager resolve Cinemachine and TextMesh Pro.
+3. Open `Scenes/MainMenu.unity` and press Play.
 
 ## Controls
 
