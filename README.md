@@ -1,7 +1,7 @@
 # GD_PROJECT: 3D Maze Game (Unity)
 
-A 3D maze game built in Unity 2019.4 with C#. Move through levels, collect every coin to
-open the exit door, avoid enemies, and reach the exit to clear the level.
+A 3D maze game built in Unity 2019.4 with C#. Collect every coin to open the
+exit door, avoid the guards, and walk into the exit to clear the level.
 
 ## Features
 
