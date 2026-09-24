@@ -1,5 +1,9 @@
 # GD_PROJECT: 3D Maze Game (Unity)
 
+[![CI](https://github.com/umer-78/GD_PROJECT/actions/workflows/ci.yml/badge.svg)](https://github.com/umer-78/GD_PROJECT/actions/workflows/ci.yml)
+
+**Live demo:** https://umer-78.github.io/GD_PROJECT/
+
 A 3D maze game built in Unity 2019.4 with C#. Collect every coin to open the
 exit door, avoid the guards, and walk into the exit to clear the level.
 
