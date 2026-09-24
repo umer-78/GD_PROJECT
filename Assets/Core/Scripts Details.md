@@ -1,5 +1,10 @@
 # Core Script Overview
 
+> **Note:** Design notes for individual scripts. Optional scripts
+> (`PowerUpManager.cs`, `MazeGenerator.cs`, `ExitController.cs`) are **not
+> attached** in the shipped Level1–Level5 scenes. Interactive gameplay in the
+> shipped build is: movement, coins, guards, exit door (`END` tag).
+
 This document outlines the functionality and features of the Core scripts used in the game.
 
 ---

@@ -1,14 +1,15 @@
 # GD_PROJECT: 3D Maze Game (Unity)
 
-A 3D maze game built in Unity with C#. You move through generated mazes, collect coins
-and power-ups, avoid traps and enemies, and reach the exit to clear the level.
+A 3D maze game built in Unity with C#. Collect coins, avoid guards, and reach the
+exit (tag `END`) to clear each hand-authored level.
 
 ## Features
 
-- **Procedural mazes:** `MazeGenerator.cs` builds walls, paths, obstacles and traps at runtime
+- **Hand-authored levels:** MainMenu + Level1–Level5 (not runtime-carved)
 - **Enemies:** NavMesh-driven enemies that shoot at the player (`EnemyController.cs`, `Bullet.cs`)
 - **Player:** physics-based movement and health (`PlayerController.cs`, `PlayerHealth.cs`)
-- **Collectibles:** coins (`CoinManager.cs`) and power-ups (`PowerUpManager.cs`)
+- **Collectibles:** coins (`CoinManager.cs`) open the exit door when all are collected
+- **Optional scripts (not attached in shipped scenes):** `PowerUpManager.cs`, `MazeGenerator.cs`, `ExitController.cs`
 - **Game flow:** singleton `GameManager` for start, pause, game over, victory and level transitions
 - **UI:** HUD, pause, game-over and victory panels (`UIManager.cs`)
 - **Audio:** persistent background music and sound effects (`AudioManager.cs`)
@@ -21,7 +22,7 @@ This folder is the Unity project's `Assets/` directory (see the
 
 | Folder | Contents |
 |---|---|
-| `Core/` | Gameplay scripts (player, enemies, coins, power-ups, levels, menu) |
+| `Core/` | Gameplay scripts (player, enemies, coins, levels, menu; optional `PowerUpManager`) |
 | `Environment/` | Maze generation and obstacles |
 | `UI/` | UI manager and panel prefabs |
 | `Audio/` | Audio manager |

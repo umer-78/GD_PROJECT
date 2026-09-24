@@ -9,11 +9,12 @@ exit door, avoid the guards, and walk into the exit to clear the level.
 - **Enemies:** NavMesh-driven guards that patrol and shoot (`EnemyController.cs`, `Bullet.prefab`)
 - **Player:** physics-based movement and health (`PlayerController.cs`, `PlayerHealth.cs`)
 - **Collectibles:** coins open the exit door when all are collected (`CoinManager.cs`)
-- **Power-ups:** speed boost and shield (`PowerUpManager.cs`)
 - **Game flow:** `GameManager` for pause / game over / victory; `LevelManager` for level progression
 - **UI:** HUD, pause, game-over and victory panels (`UIManager.cs`)
 - **Audio:** persistent background music and sound effects (`AudioManager.cs`)
-- **Optional procedural mode:** attach `MazeGenerator` to generate mazes at runtime
+- **Exit:** walk into the exit zone (tag `END`) to complete the level
+- **Optional / unused scripts (not wired in shipped scenes):** `PowerUpManager.cs`,
+  `MazeGenerator.cs`, `ExitController.cs` — present for experimentation only
 
 ## Repository layout
 

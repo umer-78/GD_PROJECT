@@ -1,4 +1,10 @@
 ## **Hierarchy Structure**
+
+> **Note:** Aspirational / historical design tree. Shipped Level1–Level5 use
+> hand-authored layout (not dynamic maze carving). `PowerUpManager` is not
+> wired as a component; optional scripts (`MazeGenerator`, `ExitController`,
+> `PowerUpManager`) are not active in shipped scenes.
+
 GameplayScene
 ├── Environment
 │   ├── Maze (Generated dynamically)

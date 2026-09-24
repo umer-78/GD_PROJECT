@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>3D Maze Game — Unity</title>
-  <meta name="description" content="Unity 3D maze game: procedurally generated levels, NavMesh enemies with line of sight, collectibles, traps and power-ups across 5 levels.">
+  <meta name="description" content="Unity 3D maze game: five hand-authored levels, NavMesh enemies, coins that open the exit door, and a browser maze-generator preview.">
   <meta name="theme-color" content="#2563eb" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0a0c10" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%232563eb'/><stop offset='1' stop-color='%237c3aed'/></linearGradient></defs><rect width='32' height='32' rx='8' fill='url(%23g)'/><text x='16' y='22' font-size='16' text-anchor='middle' fill='white' font-family='system-ui' font-weight='bold'>M</text></svg>">
@@ -199,7 +199,7 @@
         <div class="icon">M</div>
         <div>
           <h1>3D Maze Game</h1>
-          <p class="sub">Unity maze game: procedurally generated levels, NavMesh enemies, collectibles and traps.</p>
+          <p class="sub">Unity maze game: five hand-authored levels, NavMesh enemies, coins and an exit door.</p>
         </div>
       </div>
       <div class="actions">
@@ -209,7 +209,7 @@
 
     <section class="card">
       <h2><span class="section-num">01</span> Maze Generator Preview</h2>
-      <p class="muted" style="margin-top:0">The game carves mazes at runtime with a recursive-backtracker algorithm — the same algorithm runs in your browser below. Pick a size and generate.</p>
+      <p class="muted" style="margin-top:0">Browser preview only: recursive-backtracker maze carving (same family of algorithm as <code>MazeGenerator.cs</code>, which is optional and not used by the five shipped levels). Pick a size and generate.</p>
       <div class="row" style="margin-bottom:12px">
         <div>
           <label for="mazeSize">Maze size (cells per side)</label>
@@ -236,20 +236,20 @@
         <h2><span class="section-num">02</span> Game Features</h2>
         <div class="grid" style="gap:10px">
           <div class="feature">
-            <h3>Procedural levels</h3>
-            <p>Five levels, each carved at runtime with a recursive-backtracker. No two runs are guaranteed identical unless you fix the seed.</p>
+            <h3>Hand-authored levels</h3>
+            <p>Five fixed level scenes plus a main menu — layout is authored in the editor, not carved at runtime.</p>
           </div>
           <div class="feature">
             <h3>NavMesh enemies</h3>
             <p>Enemies pathfind on a baked NavMesh, check line of sight before firing, and patrol between waypoints.</p>
           </div>
           <div class="feature">
-            <h3>Collectibles &amp; traps</h3>
-            <p>Coins to collect, power-ups to activate, and traps that reset your progress if you step on them.</p>
+            <h3>Coins &amp; exit</h3>
+            <p>Collect every coin to open the exit door, then walk into the exit zone (tag <code>END</code>) to clear the level.</p>
           </div>
           <div class="feature">
             <h3>Clean state management</h3>
-            <p>Per-scene game manager: levels reset cleanly instead of leaking state between runs.</p>
+            <p>Singleton game manager for start, pause, game over, victory and level transitions.</p>
           </div>
         </div>
       </section>
@@ -266,8 +266,8 @@
             <p>NavMeshAgent + line-of-sight checks</p>
           </div>
           <div class="feature">
-            <h3>Maze</h3>
-            <p>Recursive backtracker at runtime</p>
+            <h3>Maze tool</h3>
+            <p>Optional <code>MazeGenerator.cs</code> (not used by shipped levels)</p>
           </div>
           <div class="feature">
             <h3>Scenes</h3>
@@ -282,7 +282,7 @@
             <p>Desktop (keyboard/mouse)</p>
           </div>
         </div>
-        <p class="muted" style="margin-bottom:0;font-size:13px">This is a Unity project — open it in Unity 2019.4.17f1+ to play. The maze preview above runs the same carving algorithm in JavaScript.</p>
+        <p class="muted" style="margin-bottom:0;font-size:13px">This is a Unity project — open it in Unity 2019.4.17f1+ to play. The maze preview above is a browser demo of the optional <code>MazeGenerator</code> algorithm (not the shipped level layout).</p>
       </section>
     </div>
 
@@ -300,7 +300,7 @@
       };
     }
 
-    // Recursive-backtracker maze generation (same algorithm as the Unity project)
+    // Recursive-backtracker maze generation (browser preview; same family as optional MazeGenerator.cs)
     function generateMaze(cols, rows, seed) {
       const rand = mulberry32(seed);
       // Grid: 1 = wall, 0 = path. Size is (2*cols+1) x (2*rows+1)
@@ -422,7 +422,7 @@
 
       document.getElementById('mazeLog').textContent =
         `seed=${seed} size=${size}x${size} grid=${w}x${h} path=${pathCells} reachable=${reachable} coins=${coins.length} enemies=${enemies.length}\n` +
-        `algorithm=recursive-backtracker (same as Assets/Environment/MazeGenerator.cs)`;
+        `algorithm=recursive-backtracker (browser preview; optional Assets/Environment/MazeGenerator.cs not used by shipped levels)`;
     }
 
     document.getElementById('genBtn').addEventListener('click', render);
