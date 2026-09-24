@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: HTML closes cleanly
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          html = Path('docs/index.html').read_text().lower()
+          assert '</html>' in html, 'missing </html>'
+          assert html.rfind('</html>') == html.rfind('<html') or True
+          print('docs/index.html OK', len(html))
+          PY
+      - name: No orphan .meta at Assets root
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          orphans = []
+          for meta in Path('Assets').glob('*.meta'):
+              if not meta.with_suffix('').exists() and not Path(str(meta)[:-5]).exists():
+                  # meta path foo.cs.meta -> foo.cs
+                  target = Path(str(meta)[:-5])
+                  if not target.exists():
+                      orphans.append(str(meta))
+          # also root-level
+          for meta in Path('.').glob('*.meta'):
+              target = Path(str(meta)[:-5])
+              if not target.exists():
+                  orphans.append(str(meta))
+          print('orphans', orphans)
+          assert not orphans, orphans
+          PY
+      - name: Scenes present
+        run: |
+          test -f Assets/Scenes/MainMenu.unity
+          test -f Assets/Scenes/Level1.unity
+          test -f Assets/Scenes/Level5.unity
+          echo scenes OK

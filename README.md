@@ -28,7 +28,7 @@ exit door, avoid the guards, and walk into the exit to clear the level.
 | `Assets/Scenes/` | `MainMenu` and `Level1`–`Level5` |
 | `Assets/Materials/` | Materials, physics material and textures |
 
-Design notes: [Project Structure](Project%20Structure.md) · [Hierarchy Structure](Assets/Hierarchy%20Structure.md) · [Core scripts](Assets/Core/Scripts%20Details.md)
+Design notes: [Project Structure](<Project Structure.md>) · [Hierarchy Structure](<Assets/Hierarchy Structure.md>) · [Core scripts](<Assets/Core/Scripts Details.md>)
 
 ## Running it
 
