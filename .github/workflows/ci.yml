@@ -15,10 +15,10 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          html = Path('docs/index.html').read_text().lower()
-          assert '</html>' in html, 'missing </html>'
-          assert html.rfind('</html>') == html.rfind('<html') or True
-          print('docs/index.html OK', len(html))
+          for page in ('docs/index.html', 'docs/play/index.html', 'docs/unity/index.html'):
+              html = Path(page).read_text().lower()
+              assert '</html>' in html, f'{page}: missing </html>'
+              print(page, 'OK', len(html))
           PY
       - name: No orphan .meta at Assets root
         run: |
@@ -45,3 +45,19 @@ jobs:
           test -f Assets/Scenes/Level1.unity
           test -f Assets/Scenes/Level5.unity
           echo scenes OK
+
+  game:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Maze, layout, collision and sight tests
+        run: node --test tests/*.test.mjs
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --prefix tests
+          tests/node_modules/.bin/playwright install --with-deps chromium
+      - name: Play the browser version in Chromium
+        run: node --test tests/play.browser.mjs

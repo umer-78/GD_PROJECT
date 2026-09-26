@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Treasure Hunt: the original Unity build</title>
+  <meta name="description" content="The original Unity 2019 WebGL export of Treasure Hunt, kept for reference. Its 3D models were never committed to the repository, so it renders without its art.">
+  <meta name="theme-color" content="#0a0c10">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%232563eb'/><stop offset='1' stop-color='%237c3aed'/></linearGradient></defs><rect width='32' height='32' rx='8' fill='url(%23g)'/><text x='16' y='22' font-size='16' text-anchor='middle' fill='white' font-family='system-ui' font-weight='bold'>M</text></svg>">
+  <style>
+    :root { --bg: #0a0c10; --surface: #161a22; --surface-2: #1e232d; --border: #2a3040; --text: #f0f2f5; --muted: #8b92a5; --accent: #3b82f6; --accent-2: #7c3aed; --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif; color-scheme: dark; }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.55; }
+    body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(ellipse 80% 50% at 20% -10%, rgb(59 130 246 / .22), transparent 55%), radial-gradient(ellipse 60% 40% at 90% 110%, rgb(124 58 237 / .18), transparent 55%), var(--bg); }
+    a { color: var(--accent); text-decoration: none; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 18px 16px 40px; }
+    .crumb { display: inline-flex; gap: 6px; font-size: 13px; font-weight: 600; color: var(--muted); }
+    .crumb:hover { color: var(--text); }
+    header { display: flex; align-items: end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 10px 0 14px; }
+    h1 { margin: 0; font-size: clamp(22px, 3.2vw, 30px); letter-spacing: -0.02em; }
+    .sub { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+    .btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 10px; font: 600 14px var(--font); color: var(--text); background: var(--surface-2); border: 1px solid var(--border); cursor: pointer; transition: transform .2s, filter .2s; }
+    .btn:hover { transform: translateY(-1px); filter: brightness(1.12); }
+    .btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-color: transparent; color: #fff; }
+    .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: calc(100vh - 170px); margin: 0 auto; border-radius: 16px; overflow: hidden; background: #05060a; border: 1px solid var(--border); box-shadow: 0 24px 60px rgb(0 0 0 / .45); }
+    #unityContainer { position: absolute; inset: 0; }
+    #unityContainer canvas { display: block; width: 100% !important; height: 100% !important; }
+    .loader { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; gap: 14px; background: radial-gradient(ellipse at center, #111827, #05060a); transition: opacity .4s; z-index: 2; }
+    .loader.done { opacity: 0; pointer-events: none; }
+    .loader p { margin: 0; font-size: 14px; color: var(--muted); }
+    .bar { width: min(360px, 70%); height: 8px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }
+    .bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .25s; }
+    .help { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 14px; font-size: 14px; color: var(--muted); }
+    kbd { display: inline-block; min-width: 24px; padding: 1px 6px; border-radius: 6px; border: 1px solid var(--border); border-bottom-width: 2px; background: var(--surface); color: var(--text); font: 600 12px var(--font); text-align: center; }
+    .note { margin-top: 10px; font-size: 13px; color: var(--muted); }
+    @media (max-width: 700px) { .stage { aspect-ratio: 4 / 3; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="crumb" href="../">← Treasure Hunt: 3D Maze Game</a>
+    <header>
+      <div>
+        <h1>The original Unity build</h1>
+        <p class="sub">The Unity 2019 WebGL export, kept for reference (about 27&nbsp;MB). <a href="../play/">Play the browser version instead</a>.</p>
+      </div>
+      <button class="btn primary" id="fs" type="button">⛶ Full screen</button>
+    </header>
+    <div class="stage">
+      <div id="unityContainer"></div>
+      <div class="loader" id="loader" role="status" aria-live="polite">
+        <div class="bar"><i id="barFill"></i></div>
+        <p id="loadText">Loading the game… 0%</p>
+      </div>
+    </div>
+    <div class="help">
+      <span><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> or arrow keys: move</span>
+      <span><kbd>P</kbd> or <kbd>Esc</kbd>: pause</span>
+      <span>Collect every coin to open the exit, and dodge the enemies' shots.</span>
+    </div>
+    <p class="note">The project's 3D models and most textures were never committed to this repository, so this build shows the menus and the level logic without the art: obstacles are invisible and hurt on contact. The <a href="../play/">browser version</a> is a complete port of the same game.</p>
+    <p class="note" id="mobileNote" hidden>This build needs a keyboard, so open it on a computer.</p>
+  </div>
+  <script src="Build/UnityLoader.js"></script>
+  <script>
+    var fill = document.getElementById('barFill'), text = document.getElementById('loadText'), loader = document.getElementById('loader');
+    if (matchMedia('(pointer: coarse)').matches) document.getElementById('mobileNote').hidden = false;
+    var unityInstance = UnityLoader.instantiate('unityContainer', 'Build/WebGL.json', {
+      // Unity 2019's loader asks mobile users to confirm with a pop-up; show the note on the page instead.
+      compatibilityCheck: function (instance, onsuccess) { onsuccess(); },
+      onProgress: function (instance, progress) {
+        var pct = Math.round(progress * 100);
+        fill.style.width = pct + '%';
+        text.textContent = progress < 1 ? 'Loading the game… ' + pct + '%' : 'Starting…';
+        if (progress >= 1) setTimeout(function () { loader.classList.add('done'); }, 600);
+      }
+    });
+    document.getElementById('fs').addEventListener('click', function () { unityInstance.SetFullscreen(1); });
+  </script>
+</body>
+</html>

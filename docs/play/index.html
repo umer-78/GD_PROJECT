@@ -2,80 +2,255 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Play Treasure Hunt — 3D Maze Game</title>
-  <meta name="description" content="Play the Unity 3D maze game in your browser: five levels, NavMesh enemies, coins and an exit door.">
-  <meta name="theme-color" content="#0a0c10">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%232563eb'/><stop offset='1' stop-color='%237c3aed'/></linearGradient></defs><rect width='32' height='32' rx='8' fill='url(%23g)'/><text x='16' y='22' font-size='16' text-anchor='middle' fill='white' font-family='system-ui' font-weight='bold'>M</text></svg>">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Play Treasure Hunt: 3D Maze Game</title>
+  <meta name="description" content="Play Treasure Hunt in the browser: a third-person 3D maze game with five temple levels, sentries whose sight you can see, spike traps that warn before they rise, and coins that open the exit. Keyboard, mouse, touch or gamepad.">
+  <meta name="theme-color" content="#0b0f17">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23f6c453'/><stop offset='1' stop-color='%23e8912d'/></linearGradient></defs><rect width='32' height='32' rx='8' fill='url(%23g)'/><text x='16' y='22' font-size='16' text-anchor='middle' fill='%231b1205' font-family='system-ui' font-weight='bold'>T</text></svg>">
+  <link rel="modulepreload" href="vendor/three.module.min.js">
+  <link rel="modulepreload" href="maze.js">
   <style>
-    :root { --bg: #0a0c10; --surface: #161a22; --surface-2: #1e232d; --border: #2a3040; --text: #f0f2f5; --muted: #8b92a5; --accent: #3b82f6; --accent-2: #7c3aed; --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif; color-scheme: dark; }
+    :root {
+      --bg: #0b0f17; --panel: rgb(14 19 29 / .92); --panel-2: #161d2b; --line: rgb(255 255 255 / .1); --line-2: rgb(255 255 255 / .18);
+      --text: #f4efe4; --muted: #a8afbf; --gold: #f6c453; --gold-2: #e8912d; --bad: #ff5d5d; --good: #58e0a0; --cyan: #66dcff;
+      --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --map: clamp(112px, 22vmin, 184px);
+      color-scheme: dark;
+    }
     *, *::before, *::after { box-sizing: border-box; }
-    html, body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.55; }
-    body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(ellipse 80% 50% at 20% -10%, rgb(59 130 246 / .22), transparent 55%), radial-gradient(ellipse 60% 40% at 90% 110%, rgb(124 58 237 / .18), transparent 55%), var(--bg); }
-    a { color: var(--accent); text-decoration: none; }
-    .wrap { max-width: 1120px; margin: 0 auto; padding: 18px 16px 40px; }
-    .crumb { display: inline-flex; gap: 6px; font-size: 13px; font-weight: 600; color: var(--muted); }
-    .crumb:hover { color: var(--text); }
-    header { display: flex; align-items: end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 10px 0 14px; }
-    h1 { margin: 0; font-size: clamp(22px, 3.2vw, 30px); letter-spacing: -0.02em; }
-    .sub { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
-    .btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 10px; font: 600 14px var(--font); color: var(--text); background: var(--surface-2); border: 1px solid var(--border); cursor: pointer; transition: transform .2s, filter .2s; }
-    .btn:hover { transform: translateY(-1px); filter: brightness(1.12); }
-    .btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-color: transparent; color: #fff; }
-    .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-    .stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: calc(100vh - 170px); margin: 0 auto; border-radius: 16px; overflow: hidden; background: #05060a; border: 1px solid var(--border); box-shadow: 0 24px 60px rgb(0 0 0 / .45); }
-    #unityContainer { position: absolute; inset: 0; }
-    #unityContainer canvas { display: block; width: 100% !important; height: 100% !important; }
-    .loader { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; gap: 14px; background: radial-gradient(ellipse at center, #111827, #05060a); transition: opacity .4s; z-index: 2; }
-    .loader.done { opacity: 0; pointer-events: none; }
-    .loader p { margin: 0; font-size: 14px; color: var(--muted); }
-    .bar { width: min(360px, 70%); height: 8px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }
-    .bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .25s; }
-    .help { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 14px; font-size: 14px; color: var(--muted); }
-    kbd { display: inline-block; min-width: 24px; padding: 1px 6px; border-radius: 6px; border: 1px solid var(--border); border-bottom-width: 2px; background: var(--surface); color: var(--text); font: 600 12px var(--font); text-align: center; }
-    .note { margin-top: 10px; font-size: 13px; color: var(--muted); }
-    @media (max-width: 700px) { .stage { aspect-ratio: 4 / 3; } }
+    [hidden] { display: none !important; }
+    html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font-family: var(--font); }
+    body { display: flex; flex-direction: column; height: 100dvh; overflow: hidden; -webkit-font-smoothing: antialiased; }
+    button { font: inherit; color: inherit; cursor: pointer; }
+    a { color: var(--gold); }
+    :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+    .bar { flex: none; display: flex; align-items: center; gap: 12px; padding: 8px max(12px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left)); background: #0e131d; border-bottom: 1px solid var(--line); }
+    .back { color: var(--muted); text-decoration: none; font-weight: 600; font-size: 14px; white-space: nowrap; }
+    .back:hover, .back:focus-visible { color: var(--text); }
+    .bar-actions { margin-left: auto; display: flex; gap: 8px; }
+    .chip { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line-2); background: rgb(255 255 255 / .04); font-size: 13px; font-weight: 600; white-space: nowrap; }
+    .chip:hover { background: rgb(255 255 255 / .1); }
+
+    .stage { position: relative; flex: 1; min-height: 0; overflow: hidden; background: #111722; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+    #view { position: absolute; inset: 0; width: 100%; height: 100%; display: block; outline: none; }
+
+    /* HUD */
+    .hud { position: absolute; inset: 0; pointer-events: none; font-variant-numeric: tabular-nums; }
+    .hud button { pointer-events: auto; }
+    .glass { background: rgb(8 12 20 / .64); border: 1px solid var(--line); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+    .hud-tl { position: absolute; left: max(12px, env(safe-area-inset-left)); top: 12px; right: calc(var(--map) + 28px); }
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill { display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 12px; border-radius: 999px; font-size: 14px; }
+    .pill b { font-weight: 700; }
+    .btn-pause { width: 34px; padding: 0; justify-content: center; font-size: 11px; font-weight: 800; letter-spacing: -1px; }
+    .coin { width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff3b0, var(--gold) 45%, var(--gold-2)); box-shadow: 0 0 8px rgb(246 196 83 / .6); }
+    .bump { animation: bump .35s ease-out; }
+    @keyframes bump { 40% { transform: scale(1.18); } }
+    .objective { margin: 8px 0 0; font-size: 13px; font-weight: 600; text-shadow: 0 1px 3px #000, 0 0 12px #000; }
+    .minimap { position: absolute; right: max(12px, env(safe-area-inset-right)); top: 12px; width: var(--map); height: var(--map); border-radius: 14px; }
+    .hud-bl { position: absolute; left: max(12px, env(safe-area-inset-left)); bottom: max(12px, env(safe-area-inset-bottom)); width: min(300px, 46vw); display: grid; gap: 6px; }
+    .meter-row { display: grid; grid-template-columns: 50px 1fr 30px; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 12px; font-size: 13px; }
+    .meter-row b { text-align: right; }
+    .label { color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; font-size: 11px; }
+    .meter { height: 10px; border-radius: 99px; background: rgb(255 255 255 / .08); overflow: hidden; }
+    .meter i { display: block; height: 100%; width: 100%; border-radius: inherit; }
+    #healthFill { background: linear-gradient(90deg, #36c47a, var(--good)); transition: width .25s ease-out; }
+    .low #healthFill { background: linear-gradient(90deg, #d93636, var(--bad)); }
+    .low { animation: pulse 1s ease-in-out infinite; }
+    @keyframes pulse { 50% { border-color: rgb(255 93 93 / .8); } }
+    #dashFill { background: linear-gradient(90deg, #3aa7d6, var(--cyan)); }
+    .ready .label { color: var(--cyan); }
+
+    .banner { position: absolute; left: 50%; top: 17%; width: min(560px, calc(100% - 32px)); text-align: center; padding: 14px 18px; border-radius: 16px; opacity: 0; transform: translate(-50%, -8px); transition: opacity .4s, transform .4s; }
+    .banner.show { opacity: 1; transform: translate(-50%, 0); }
+    .banner strong { display: block; font-size: 20px; color: var(--gold); margin-bottom: 4px; }
+    .banner span { font-size: 14px; line-height: 1.45; }
+    .toasts { position: absolute; left: 50%; top: 38%; transform: translateX(-50%); display: grid; gap: 6px; justify-items: center; width: min(420px, calc(100% - 32px)); }
+    .toast { padding: 7px 14px; border-radius: 999px; background: rgb(8 12 20 / .82); border: 1px solid var(--line-2); font-size: 14px; font-weight: 700; animation: pop .25s ease-out; transition: opacity .4s; }
+    .toast.bad { color: #ffd6d6; border-color: rgb(255 93 93 / .65); background: rgb(64 10 14 / .85); }
+    .toast.good { color: #d6ffe9; border-color: rgb(88 224 160 / .55); }
+    .toast.gold { color: #fff1c9; border-color: rgb(246 196 83 / .65); }
+    .toast.out { opacity: 0; }
+    @keyframes pop { from { transform: scale(.85); opacity: 0; } }
+    .hurt { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 42%, rgb(220 20 30 / .55)); opacity: 0; transition: opacity .6s; }
+    .hurt.on { opacity: 1; transition: none; }
+    .hit-arrow { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform: rotate(var(--a, 0rad)); opacity: 0; }
+    .hit-arrow::before { content: ""; position: absolute; left: -16px; top: calc(-1 * min(30vh, 190px)); border-left: 16px solid transparent; border-right: 16px solid transparent; border-bottom: 26px solid var(--bad); filter: drop-shadow(0 0 6px rgb(255 60 60 / .9)); }
+    .hit-arrow.show { animation: arrow 1.6s ease-out; }
+    @keyframes arrow { 0%, 60% { opacity: 1; } 100% { opacity: 0; } }
+
+    .stick { position: absolute; width: 112px; height: 112px; margin: -56px 0 0 -56px; border-radius: 50%; border: 2px solid rgb(255 255 255 / .28); background: rgb(255 255 255 / .06); }
+    .knob { position: absolute; left: 50%; top: 50%; width: 48px; height: 48px; margin: -24px 0 0 -24px; border-radius: 50%; background: rgb(255 255 255 / .38); }
+    .touch-dash { --ready: 1; display: none; position: absolute; right: max(18px, env(safe-area-inset-right)); bottom: max(22px, env(safe-area-inset-bottom)); width: 78px; height: 78px; border-radius: 50%; border: 2px solid rgb(102 220 255 / .65); background: conic-gradient(rgb(102 220 255 / .5) calc(var(--ready) * 360deg), rgb(20 60 80 / .6) 0); color: #dff6ff; font-weight: 800; }
+    @media (pointer: coarse) {
+      .touch-dash { display: block; }
+      #dash { display: none; }   /* the Dash button shows its own cooldown */
+      .hud-bl { left: 50%; transform: translateX(-50%); width: min(260px, 40vw); }
+      .meter-row { padding: 6px 10px; }
+    }
+
+    /* screens */
+    .screen { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; overflow-y: auto; touch-action: pan-y; background: radial-gradient(ellipse at 50% 30%, rgb(20 26 40 / .5), rgb(6 8 12 / .86)); }
+    .panel { width: min(780px, 100%); margin: auto; padding: 26px; border-radius: 20px; background: var(--panel); border: 1px solid var(--line-2); box-shadow: 0 30px 80px rgb(0 0 0 / .5); }
+    .panel.small { width: min(440px, 100%); text-align: center; }
+    .eyebrow { margin: 0; color: var(--gold); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; }
+    .panel h1 { margin: 4px 0 8px; font-size: clamp(30px, 6vw, 46px); letter-spacing: -.02em; line-height: 1.05; }
+    .panel h2 { margin: 22px 0 10px; font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+    .lede { margin: 0; line-height: 1.55; opacity: .9; }
+    .muted { color: var(--muted); }
+    .play-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 16px; margin-top: 18px; }
+    .panel button:not(.level) { padding: 11px 18px; border-radius: 12px; border: 1px solid var(--line-2); background: rgb(255 255 255 / .06); font-weight: 700; font-size: 15px; transition: transform .15s, background .15s; }
+    .panel button:not(.level):hover { background: rgb(255 255 255 / .12); transform: translateY(-1px); }
+    .panel button.primary { background: linear-gradient(135deg, var(--gold), var(--gold-2)); color: #1b1205; border-color: transparent; }
+    .panel button.primary:hover { background: linear-gradient(135deg, #ffd36e, #f09d3a); }
+    .panel button.big { padding: 14px 28px; font-size: 18px; }
+    .levels { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 10px; }
+    .level { display: grid; gap: 2px; text-align: left; padding: 12px; border-radius: 14px; border: 1px solid var(--line-2); background: var(--panel-2); transition: transform .15s, border-color .15s; }
+    .level:hover:not(:disabled) { transform: translateY(-2px); border-color: var(--gold); }
+    .level:disabled { opacity: .5; cursor: not-allowed; }
+    .level .n { font-size: 12px; font-weight: 800; color: var(--gold); }
+    .level .nm { font-weight: 700; font-size: 14px; }
+    .level .best { font-size: 12px; color: var(--muted); }
+    .help { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0 26px; }
+    .help ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 9px; font-size: 14px; line-height: 1.45; }
+    kbd { display: inline-block; min-width: 22px; padding: 1px 6px; margin-right: 2px; border-radius: 6px; border: 1px solid var(--line-2); border-bottom-width: 2px; background: #1c2433; font: 700 12px var(--font); text-align: center; }
+    .legend li { display: grid; grid-template-columns: 18px 1fr; gap: 10px; align-items: start; }
+    .sw { width: 16px; height: 16px; margin-top: 2px; border-radius: 50%; }
+    .sw.orb { background: radial-gradient(circle, #fff 0 22%, #ff6a3c 48%, transparent 74%); box-shadow: 0 0 10px #ff5a3c; }
+    .sw.cone { border-radius: 2px 50% 50% 50%; transform: rotate(45deg); background: rgb(255 179 71 / .55); }
+    .sw.spike { border-radius: 3px; background: linear-gradient(135deg, #ff9a3c, #b33a12); }
+    .sw.potion { background: radial-gradient(circle at 40% 35%, #ffc0d4, #ff4f7b 55%, #a0123e); }
+    .stack { display: grid; gap: 10px; margin-top: 18px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0 0; }
+    .stats div { padding: 12px 6px; border-radius: 12px; background: var(--panel-2); border: 1px solid var(--line); }
+    .stats dt { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+    .stats dd { margin: 4px 0 0; font-size: 19px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .loading { position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; padding: 16px; text-align: center; background: var(--bg); color: var(--muted); font-weight: 600; }
+    .hud.banner-on .objective { visibility: hidden; }
+    @media (max-width: 560px) { .panel { padding: 20px 16px; } .chip { padding: 6px 10px; } }
+    @media (max-height: 500px) {
+      .bar { padding-top: 4px; padding-bottom: 4px; }
+      .banner { top: 56px; padding: 8px 14px; width: min(460px, calc(100% - 2 * var(--map) - 56px)); }
+      .banner strong { font-size: 16px; margin-bottom: 2px; }
+      .banner span { font-size: 12.5px; }
+      .toasts { top: 30%; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <a class="crumb" href="../">← Treasure Hunt: 3D Maze Game</a>
-    <header>
-      <div>
-        <h1>Treasure Hunt</h1>
-        <p class="sub">The Unity game itself, running in your browser (WebGL build, about 27&nbsp;MB).</p>
-      </div>
-      <button class="btn primary" id="fs" type="button">⛶ Full screen</button>
-    </header>
-    <div class="stage">
-      <div id="unityContainer"></div>
-      <div class="loader" id="loader" role="status" aria-live="polite">
-        <div class="bar"><i id="barFill"></i></div>
-        <p id="loadText">Loading the game… 0%</p>
-      </div>
+  <header class="bar">
+    <a class="back" href="../">← Treasure Hunt</a>
+    <div class="bar-actions">
+      <button class="chip" id="btnSound" type="button" aria-pressed="true">Sound on</button>
+      <button class="chip" id="btnFull" type="button">Full screen</button>
     </div>
-    <div class="help">
-      <span><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> or arrow keys: move</span>
-      <span><kbd>P</kbd> or <kbd>Esc</kbd>: pause</span>
-      <span>Collect every coin to open the exit, and dodge the enemies' shots.</span>
+  </header>
+
+  <main class="stage" id="stage">
+    <canvas id="view" tabindex="-1" aria-label="Treasure Hunt: the game view"></canvas>
+
+    <div class="hud" id="hud" hidden>
+      <div class="hud-tl">
+        <div class="pills">
+          <button class="pill glass btn-pause" id="btnPause" type="button" aria-label="Pause (P)">❚❚</button>
+          <span class="pill glass"><b id="levelName"></b></span>
+          <span class="pill glass" id="coinPill" title="Coins"><i class="coin"></i><b id="coins">0/0</b></span>
+          <span class="pill glass" title="Time"><b id="timer">0:00</b></span>
+        </div>
+        <p class="objective" id="objective"></p>
+      </div>
+      <canvas class="minimap glass" id="minimap" width="368" height="368" aria-label="Map of the explored maze"></canvas>
+      <div class="hud-bl">
+        <div class="meter-row glass" id="health"><span class="label">Health</span><div class="meter"><i id="healthFill"></i></div><b id="healthText">100</b></div>
+        <div class="meter-row glass" id="dash"><span class="label">Dash</span><div class="meter"><i id="dashFill"></i></div><b></b></div>
+      </div>
+      <div class="banner glass" id="banner" aria-live="polite"><strong id="bannerTitle"></strong><span id="bannerText"></span></div>
+      <div class="toasts" id="toasts" aria-live="polite"></div>
+      <div class="hurt" id="hurt"></div>
+      <div class="hit-arrow" id="hitArrow"></div>
+      <div class="stick" id="stick" hidden><div class="knob" id="knob"></div></div>
+      <button class="touch-dash" id="btnDash" type="button">Dash</button>
     </div>
-    <p class="note" id="mobileNote" hidden>This game needs a keyboard, so play it on a computer.</p>
-  </div>
-  <script src="Build/UnityLoader.js"></script>
-  <script>
-    var fill = document.getElementById('barFill'), text = document.getElementById('loadText'), loader = document.getElementById('loader');
-    if (matchMedia('(pointer: coarse)').matches) document.getElementById('mobileNote').hidden = false;
-    var unityInstance = UnityLoader.instantiate('unityContainer', 'Build/WebGL.json', {
-      // Unity 2019's loader asks mobile users to confirm with a pop-up; show the note on the page instead.
-      compatibilityCheck: function (instance, onsuccess) { onsuccess(); },
-      onProgress: function (instance, progress) {
-        var pct = Math.round(progress * 100);
-        fill.style.width = pct + '%';
-        text.textContent = progress < 1 ? 'Loading the game… ' + pct + '%' : 'Starting…';
-        if (progress >= 1) setTimeout(function () { loader.classList.add('done'); }, 600);
-      }
-    });
-    document.getElementById('fs').addEventListener('click', function () { unityInstance.SetFullscreen(1); });
-  </script>
+
+    <section class="screen" id="screenMenu" aria-labelledby="menuTitle" hidden>
+      <div class="panel">
+        <p class="eyebrow">A 3D maze game</p>
+        <h1 id="menuTitle">Treasure Hunt</h1>
+        <p class="lede">Find every coin in the temple maze to open the exit. Sentries guard the halls, but you can see exactly what they see, and every shot gives you time to dodge.</p>
+        <div class="play-row">
+          <button class="primary big" id="btnPlay" type="button" data-autofocus>▶ Play</button>
+          <span class="muted" id="playLevel"></span>
+        </div>
+        <h2>Levels</h2>
+        <div class="levels" id="levels"></div>
+        <div class="help">
+          <div>
+            <h2>Controls</h2>
+            <ul>
+              <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or arrow keys: move</li>
+              <li><kbd>Shift</kbd>: run · <kbd>Space</kbd>: dash</li>
+              <li><kbd>Q</kbd> <kbd>E</kbd> or drag: turn the camera · wheel: zoom</li>
+              <li><kbd>P</kbd> or <kbd>Esc</kbd>: pause · <kbd>M</kbd>: sound</li>
+              <li>Touch: left thumb moves, right thumb turns the camera, <b>Dash</b> button dashes</li>
+              <li>Gamepad: left stick moves, right stick turns, <b>A</b> dashes, <b>Start</b> pauses</li>
+            </ul>
+          </div>
+          <div>
+            <h2>What hurts, and what helps</h2>
+            <ul class="legend">
+              <li><i class="sw cone"></i><span><b>Sentry sight.</b> The lit cone on the floor is what a sentry sees. It also notices you close behind it.</span></li>
+              <li><i class="sw orb"></i><span><b>Sentry orb, −15.</b> The sentry's eye turns red and charges before it fires. Step aside, break line of sight, or dash through the orb.</span></li>
+              <li><i class="sw spike"></i><span><b>Spike trap, −10.</b> The plate glows orange, then the spikes rise.</span></li>
+              <li><i class="sw potion"></i><span><b>Potion, +35 health.</b></span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screenPause" aria-labelledby="pauseTitle" hidden>
+      <div class="panel small">
+        <h1 id="pauseTitle">Paused</h1>
+        <p class="muted" id="pauseInfo"></p>
+        <div class="stack">
+          <button class="primary" id="btnResume" type="button" data-autofocus>Resume</button>
+          <button id="btnRestart" type="button">Restart level</button>
+          <button id="btnMenu" type="button">Main menu</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screenWin" aria-labelledby="winTitle" hidden>
+      <div class="panel small">
+        <h1 id="winTitle">Level complete</h1>
+        <dl class="stats">
+          <div><dt>Time</dt><dd id="statTime">0:00</dd></div>
+          <div><dt>Hits taken</dt><dd id="statHits">0</dd></div>
+          <div><dt>Best</dt><dd id="statBest">0:00</dd></div>
+        </dl>
+        <div class="stack">
+          <button class="primary" id="btnNext" type="button" data-autofocus>Next level</button>
+          <button id="btnWinMenu" type="button">Main menu</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screenLose" aria-labelledby="loseTitle" hidden>
+      <div class="panel small">
+        <h1 id="loseTitle">Knocked out</h1>
+        <p class="lede" id="loseCause"></p>
+        <div class="stack">
+          <button class="primary" id="btnRetry" type="button" data-autofocus>Try again</button>
+          <button id="btnLoseMenu" type="button">Main menu</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="loading" id="loading" role="status">Loading the temple…</div>
+    <noscript><div class="loading">This game needs JavaScript.</div></noscript>
+  </main>
+  <script type="module" src="game.js"></script>
 </body>
 </html>

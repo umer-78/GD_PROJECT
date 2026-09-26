@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Treasure Hunt — 3D Maze Game in Unity</title>
+  <title>Treasure Hunt: 3D Maze Game</title>
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Treasure Hunt — 3D Maze Game in Unity">
-  <meta property="og:description" content="Unity 3D maze game: five hand-authored levels, NavMesh enemies, coins that open the exit door. Playable in the browser (WebGL), plus a maze-generator preview.">
+  <meta property="og:title" content="Treasure Hunt: 3D Maze Game">
+  <meta property="og:description" content="A 3D maze game: five temple levels, sentries whose sight you can see, spike traps and coins that open the exit. Designed in Unity (C#), with a complete browser version in three.js for keyboard, touch or gamepad.">
   <meta property="og:url" content="https://umer-78.github.io/GD_PROJECT/">
   <meta name="twitter:card" content="summary">
-  <meta name="description" content="Unity 3D maze game: five hand-authored levels, NavMesh enemies, coins that open the exit door. Playable in the browser (WebGL), plus a maze-generator preview.">
+  <meta name="description" content="A 3D maze game: five temple levels, sentries whose sight you can see, spike traps and coins that open the exit. Designed in Unity (C#), with a complete browser version in three.js for keyboard, touch or gamepad.">
   <meta name="theme-color" content="#2563eb" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0a0c10" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%232563eb'/><stop offset='1' stop-color='%237c3aed'/></linearGradient></defs><rect width='32' height='32' rx='8' fill='url(%23g)'/><text x='16' y='22' font-size='16' text-anchor='middle' fill='white' font-family='system-ui' font-weight='bold'>M</text></svg>">
@@ -248,7 +248,7 @@ html.mk-pre header.top, html.mk-pre main section, html.mk-pre section.card, html
         <div class="icon">M</div>
         <div>
           <h1>Treasure Hunt: 3D Maze Game</h1>
-          <p class="sub">Unity maze game: five hand-authored levels, NavMesh enemies, coins and an exit door.</p>
+          <p class="sub">A 3D maze game designed in Unity (C#), with a complete browser version in three.js: five temple levels, sentries, spike traps, coins and an exit.</p>
         </div>
       </div>
       <div class="actions">
@@ -259,17 +259,18 @@ html.mk-pre header.top, html.mk-pre main section, html.mk-pre section.card, html
 
     <section class="card play-card">
       <h2><span class="section-num">01</span> Play the game</h2>
-      <p class="muted" style="margin-top:0">The real Unity game, built for WebGL: the main menu, all five levels, enemies, coins and the exit door. It downloads about 27&nbsp;MB, so it only loads when you press play.</p>
+      <p class="muted" style="margin-top:0">The browser version, built in three.js: a third-person camera, five levels, sentries whose sight you can see on the floor, spike traps that glow before they rise, and coins that open the exit. Every hit is named on screen with an arrow to where it came from. It downloads about 220&nbsp;KB compressed.</p>
       <a class="play-poster" href="play/" aria-label="Play Treasure Hunt in your browser">
-        <img src="play/poster.jpg" alt="The game's main menu: Treasure Hunt, Start Game" width="866" height="469" loading="lazy">
+        <img src="play/poster.jpg" alt="The game: the explorer in a corridor, a sentry that has spotted them with its red sight cone on the floor, and a gold coin" width="1280" height="718" loading="lazy">
         <span class="play-btn">▶ Play in browser</span>
       </a>
-      <p class="muted" style="margin:12px 0 0;font-size:13px">Keyboard: <code>W A S D</code> or arrow keys to move, <code>P</code> or <code>Esc</code> to pause. Desktop browsers only (it needs a keyboard).</p>
+      <p class="muted" style="margin:12px 0 0;font-size:13px">Keyboard: <code>W A S D</code> or arrow keys to move, <code>Shift</code> to run, <code>Space</code> to dash, <code>Q</code>/<code>E</code> or drag to turn the camera, <code>P</code> or <code>Esc</code> to pause. On a phone: left thumb moves, right thumb turns. Gamepads work too.</p>
+      <p class="muted" style="margin:6px 0 0;font-size:13px">The <a href="unity/">original Unity WebGL build</a> (27&nbsp;MB) is kept for reference. Its 3D models were never committed to this repository, so it runs without its art.</p>
     </section>
 
     <section class="card">
       <h2><span class="section-num">02</span> Maze Generator Preview</h2>
-      <p class="muted" style="margin-top:0">Browser preview only: recursive-backtracker maze carving (same family of algorithm as <code>MazeGenerator.cs</code>, which is optional and not used by the five shipped levels). Pick a size and generate.</p>
+      <p class="muted" style="margin-top:0">Recursive-backtracker maze carving, the algorithm the browser version builds its five levels with (it also opens a few dead ends into loops, so there is always a way around a sentry). The Unity levels are hand-authored; <code>MazeGenerator.cs</code> is an optional script they do not use. Pick a size and generate.</p>
       <div class="row" style="margin-bottom:12px">
         <div>
           <label for="mazeSize">Maze size (cells per side)</label>
@@ -296,20 +297,20 @@ html.mk-pre header.top, html.mk-pre main section, html.mk-pre section.card, html
         <h2><span class="section-num">03</span> Game Features</h2>
         <div class="grid" style="gap:10px">
           <div class="feature">
-            <h3>Hand-authored levels</h3>
-            <p>Five fixed level scenes plus a main menu — layout is authored in the editor, not carved at runtime.</p>
+            <h3>Five temple levels</h3>
+            <p>Each level is a seeded maze with its own stone and light: coins in the dead ends, the exit at the far end, more sentries and traps as you go.</p>
           </div>
           <div class="feature">
-            <h3>NavMesh enemies</h3>
-            <p>Enemies pathfind on a baked NavMesh, check line of sight before firing, and patrol between waypoints.</p>
+            <h3>Sentries you can read</h3>
+            <p>Sentries patrol set routes. Their sight is a lit cone on the floor, cut off by walls; they turn red when they spot you and charge before every shot.</p>
           </div>
           <div class="feature">
-            <h3>Coins &amp; exit</h3>
-            <p>Collect every coin to open the exit door, then walk into the exit zone (tag <code>END</code>) to clear the level.</p>
+            <h3>Damage you can see coming</h3>
+            <p>Every hit is named on screen with an arrow to where it came from. Spike traps glow orange before they rise. Dash through an orb to dodge it.</p>
           </div>
           <div class="feature">
-            <h3>Clean state management</h3>
-            <p>Singleton game manager for start, pause, game over, victory and level transitions.</p>
+            <h3>Any controller</h3>
+            <p>Keyboard and mouse, touch (thumb stick and dash button) or a gamepad, with a camera that stays above the walls and a map that fills in as you explore.</p>
           </div>
         </div>
       </section>
@@ -319,34 +320,34 @@ html.mk-pre header.top, html.mk-pre main section, html.mk-pre section.card, html
         <div class="grid three">
           <div class="feature">
             <h3>Engine</h3>
-            <p>Unity 2019.4 LTS (C#)</p>
+            <p>Unity 2019.4 LTS (C#); browser version in three.js 0.186</p>
           </div>
           <div class="feature">
-            <h3>AI</h3>
-            <p>NavMeshAgent + line-of-sight checks</p>
+            <h3>Enemies</h3>
+            <p>Unity: NavMeshAgent. Browser: patrol routes, grid line of sight, sight cones</p>
           </div>
           <div class="feature">
-            <h3>Maze tool</h3>
-            <p>Optional <code>MazeGenerator.cs</code> (not used by shipped levels)</p>
+            <h3>Mazes</h3>
+            <p>Recursive backtracker with loops, seeded per level (<code>maze.js</code>)</p>
           </div>
           <div class="feature">
-            <h3>Scenes</h3>
-            <p>5 levels + main menu</p>
+            <h3>Tests</h3>
+            <p>7 unit tests for the mazes, layout, collision and sight, run in CI</p>
           </div>
           <div class="feature">
-            <h3>NavMesh</h3>
-            <p>Per-level baked assets (2019.4 format)</p>
+            <h3>Levels</h3>
+            <p>5 levels + main menu, progress saved in the browser</p>
           </div>
           <div class="feature">
             <h3>Platform</h3>
-            <p>Desktop + WebGL (browser)</p>
+            <p>Unity desktop build; any modern browser, phone or computer</p>
           </div>
         </div>
-        <p class="muted" style="margin-bottom:0;font-size:13px">Play it in the browser (section 01), or open the project in Unity 2019.4.17f1+. The maze preview above is a browser demo of the optional <code>MazeGenerator</code> algorithm (not the shipped level layout).</p>
+        <p class="muted" style="margin-bottom:0;font-size:13px">Play the browser version (section 01), or open the Unity project in Unity 2019.4.17f1+.</p>
       </section>
     </div>
 
-    <footer>Unity 2019.4 LTS · C# · Built by <a href="https://github.com/umer-78">Umer Hashmi</a></footer>
+    <footer>Unity 2019.4 LTS · C# · three.js · Built by <a href="https://github.com/umer-78">Umer Hashmi</a></footer>
   </div>
 
   <script>
@@ -482,7 +483,7 @@ html.mk-pre header.top, html.mk-pre main section, html.mk-pre section.card, html
 
       document.getElementById('mazeLog').textContent =
         `seed=${seed} size=${size}x${size} grid=${w}x${h} path=${pathCells} reachable=${reachable} coins=${coins.length} enemies=${enemies.length}\n` +
-        `algorithm=recursive-backtracker (browser preview; optional Assets/Environment/MazeGenerator.cs not used by shipped levels)`;
+        `algorithm=recursive-backtracker (the browser game also adds loops; the Unity levels are hand-authored)`;
     }
 
     document.getElementById('genBtn').addEventListener('click', render);
