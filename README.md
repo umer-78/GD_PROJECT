@@ -1,8 +1,8 @@
-# GD_PROJECT: 3D Maze Game (Unity)
+# GD_PROJECT: Treasure Hunt, a 3D maze game (Unity)
 
 [![CI](https://github.com/umer-78/GD_PROJECT/actions/workflows/ci.yml/badge.svg)](https://github.com/umer-78/GD_PROJECT/actions/workflows/ci.yml)
 
-**Live demo:** https://umer-78.github.io/GD_PROJECT/
+**Live demo:** https://umer-78.github.io/GD_PROJECT/ · **Play in the browser:** https://umer-78.github.io/GD_PROJECT/play/
 
 A 3D maze game built in Unity 2019.4 with C#. Collect every coin to open the
 exit door, avoid the guards, and walk into the exit to clear the level.
@@ -13,6 +13,7 @@ exit door, avoid the guards, and walk into the exit to clear the level.
 - **Enemies:** NavMesh-driven guards that patrol and shoot (`EnemyController.cs`, `Bullet.prefab`)
 - **Player:** physics-based movement and health (`PlayerController.cs`, `PlayerHealth.cs`)
 - **Collectibles:** coins open the exit door when all are collected (`CoinManager.cs`)
+- **Obstacles:** each level has moving and rotating obstacles that damage the player on contact (`ObstacleController.cs`)
 - **Game flow:** `GameManager` for pause / game over / victory; `LevelManager` for level progression
 - **UI:** HUD, pause, game-over and victory panels (`UIManager.cs`)
 - **Audio:** persistent background music and sound effects (`AudioManager.cs`)
@@ -25,7 +26,7 @@ exit door, avoid the guards, and walk into the exit to clear the level.
 | Folder | Contents |
 |---|---|
 | `Assets/Core/` | Gameplay scripts |
-| `Assets/Environment/` | Maze generation and obstacles |
+| `Assets/Environment/` | Obstacles (`ObstacleController.cs`) and the unused `MazeGenerator.cs` |
 | `Assets/UI/` | UI manager and panel prefabs |
 | `Assets/Audio/` | Audio manager |
 | `Assets/Prefabs/` | Wall, Coin, Guard, door, Floor, Bullet, Player model |
@@ -42,12 +43,21 @@ Design notes: [Project Structure](<Project Structure.md>) · [Hierarchy Structur
 
 Build Settings already list MainMenu and Level1–Level5 in order.
 
+To rebuild the browser version, run the `WebGLBuild.Build` editor script in batch mode:
+
+```bash
+Unity -batchmode -quit -projectPath . -executeMethod WebGLBuild.Build -buildPath build/WebGL
+```
+
+then copy `build/WebGL/Build/` into `docs/play/Build/`. On macOS 12.3 and later, Unity 2019 needs
+`EMSDK_PYTHON` set to a Python 3 (3.11 or older), because `/usr/bin/python` no longer exists.
+
 ## Controls
 
 | Key | Action |
 |---|---|
 | WASD / arrow keys | Move |
-| Esc | Pause / resume |
+| Esc or P | Pause / resume |
 
 Collect every coin to open the exit door, then walk into the exit to finish the level.
 

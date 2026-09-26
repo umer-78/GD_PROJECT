@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>3D Maze Game — Unity</title>
+  <title>Treasure Hunt — 3D Maze Game in Unity</title>
   <meta property="og:type" content="website">
-  <meta property="og:title" content="3D Maze Game — Unity">
-  <meta property="og:description" content="Unity 3D maze game: five hand-authored levels, NavMesh enemies, coins that open the exit door, and a browser maze-generator preview.">
+  <meta property="og:title" content="Treasure Hunt — 3D Maze Game in Unity">
+  <meta property="og:description" content="Unity 3D maze game: five hand-authored levels, NavMesh enemies, coins that open the exit door. Playable in the browser (WebGL), plus a maze-generator preview.">
   <meta property="og:url" content="https://umer-78.github.io/GD_PROJECT/">
   <meta name="twitter:card" content="summary">
-  <meta name="description" content="Unity 3D maze game: five hand-authored levels, NavMesh enemies, coins that open the exit door, and a browser maze-generator preview.">
+  <meta name="description" content="Unity 3D maze game: five hand-authored levels, NavMesh enemies, coins that open the exit door. Playable in the browser (WebGL), plus a maze-generator preview.">
   <meta name="theme-color" content="#2563eb" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0a0c10" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%232563eb'/><stop offset='1' stop-color='%237c3aed'/></linearGradient></defs><rect width='32' height='32' rx='8' fill='url(%23g)'/><text x='16' y='22' font-size='16' text-anchor='middle' fill='white' font-family='system-ui' font-weight='bold'>M</text></svg>">
@@ -119,6 +119,11 @@
     .card:nth-child(2) { animation-delay: 0.1s; }
     .card:nth-child(3) { animation-delay: 0.15s; }
     .card:nth-child(4) { animation-delay: 0.2s; }
+    .play-poster { position: relative; display: block; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); aspect-ratio: 16 / 9; background: #05060a; }
+    .play-poster img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease), filter .4s var(--ease); }
+    .play-poster:hover img { transform: scale(1.03); filter: brightness(.8); }
+    .play-btn { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 14px 26px; border-radius: 999px; font-weight: 700; font-size: 17px; color: #fff; background: linear-gradient(135deg, var(--accent), #7c3aed); box-shadow: 0 10px 30px rgb(0 0 0 / .35), 0 0 0 6px rgb(255 255 255 / .12); transition: transform .3s var(--ease-bounce); }
+    .play-poster:hover .play-btn { transform: translate(-50%, -50%) scale(1.06); }
     .card:hover { box-shadow: var(--shadow-md); border-color: var(--border-strong); }
     .card > h2, .card > header h2 {
       font-size: 16px; font-weight: 700; margin: 0 0 12px; letter-spacing: -0.01em;
@@ -242,17 +247,28 @@ html.mk-pre header.top, html.mk-pre main section, html.mk-pre section.card, html
       <div class="brand">
         <div class="icon">M</div>
         <div>
-          <h1>3D Maze Game</h1>
+          <h1>Treasure Hunt: 3D Maze Game</h1>
           <p class="sub">Unity maze game: five hand-authored levels, NavMesh enemies, coins and an exit door.</p>
         </div>
       </div>
       <div class="actions">
+        <a class="btn primary" href="play/">▶ Play in browser</a>
         <a class="btn" href="https://github.com/umer-78/GD_PROJECT">GitHub</a>
       </div>
     </header>
 
+    <section class="card play-card">
+      <h2><span class="section-num">01</span> Play the game</h2>
+      <p class="muted" style="margin-top:0">The real Unity game, built for WebGL: the main menu, all five levels, enemies, coins and the exit door. It downloads about 27&nbsp;MB, so it only loads when you press play.</p>
+      <a class="play-poster" href="play/" aria-label="Play Treasure Hunt in your browser">
+        <img src="play/poster.jpg" alt="The game's main menu: Treasure Hunt, Start Game" width="866" height="469" loading="lazy">
+        <span class="play-btn">▶ Play in browser</span>
+      </a>
+      <p class="muted" style="margin:12px 0 0;font-size:13px">Keyboard: <code>W A S D</code> or arrow keys to move, <code>P</code> or <code>Esc</code> to pause. Desktop browsers only (it needs a keyboard).</p>
+    </section>
+
     <section class="card">
-      <h2><span class="section-num">01</span> Maze Generator Preview</h2>
+      <h2><span class="section-num">02</span> Maze Generator Preview</h2>
       <p class="muted" style="margin-top:0">Browser preview only: recursive-backtracker maze carving (same family of algorithm as <code>MazeGenerator.cs</code>, which is optional and not used by the five shipped levels). Pick a size and generate.</p>
       <div class="row" style="margin-bottom:12px">
         <div>
@@ -277,7 +293,7 @@ html.mk-pre header.top, html.mk-pre main section, html.mk-pre section.card, html
 
     <div class="grid two">
       <section class="card">
-        <h2><span class="section-num">02</span> Game Features</h2>
+        <h2><span class="section-num">03</span> Game Features</h2>
         <div class="grid" style="gap:10px">
           <div class="feature">
             <h3>Hand-authored levels</h3>
@@ -299,7 +315,7 @@ html.mk-pre header.top, html.mk-pre main section, html.mk-pre section.card, html
       </section>
 
       <section class="card">
-        <h2><span class="section-num">03</span> Technical Details</h2>
+        <h2><span class="section-num">04</span> Technical Details</h2>
         <div class="grid three">
           <div class="feature">
             <h3>Engine</h3>
@@ -323,10 +339,10 @@ html.mk-pre header.top, html.mk-pre main section, html.mk-pre section.card, html
           </div>
           <div class="feature">
             <h3>Platform</h3>
-            <p>Desktop (keyboard/mouse)</p>
+            <p>Desktop + WebGL (browser)</p>
           </div>
         </div>
-        <p class="muted" style="margin-bottom:0;font-size:13px">This is a Unity project — open it in Unity 2019.4.17f1+ to play. The maze preview above is a browser demo of the optional <code>MazeGenerator</code> algorithm (not the shipped level layout).</p>
+        <p class="muted" style="margin-bottom:0;font-size:13px">Play it in the browser (section 01), or open the project in Unity 2019.4.17f1+. The maze preview above is a browser demo of the optional <code>MazeGenerator</code> algorithm (not the shipped level layout).</p>
       </section>
     </div>
 

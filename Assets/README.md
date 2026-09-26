@@ -23,7 +23,7 @@ This folder is the Unity project's `Assets/` directory (see the
 | Folder | Contents |
 |---|---|
 | `Core/` | Gameplay scripts (player, enemies, coins, levels, menu; optional `PowerUpManager`) |
-| `Environment/` | Maze generation and obstacles |
+| `Environment/` | Obstacles (`ObstacleController.cs`) and the unused `MazeGenerator.cs` |
 | `UI/` | UI manager and panel prefabs |
 | `Audio/` | Audio manager |
 | `Scenes/` | `MainMenu` and `Level1`–`Level5` |

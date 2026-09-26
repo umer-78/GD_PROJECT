@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -43,12 +44,23 @@ public class GameManager : MonoBehaviour
     {
         if (uiManager == null) uiManager = FindObjectOfType<UIManager>();
         if (uiManager != null) uiManager.UpdateLevelText(currentLevel);
+#if UNITY_WEBGL && !UNITY_EDITOR
+        // In a browser Quit Game would only repeat Main Menu, so hide it (the panels start inactive, hence FindObjectsOfTypeAll).
+        foreach (var button in Resources.FindObjectsOfTypeAll<Button>())
+        {
+            if (!button.gameObject.scene.IsValid()) continue;
+            for (int i = 0; i < button.onClick.GetPersistentEventCount(); i++)
+            {
+                if (button.onClick.GetPersistentMethodName(i) == nameof(QuitGame)) { button.gameObject.SetActive(false); break; }
+            }
+        }
+#endif
     }
 
     private void Update()
     {
-        // Nothing opened the pause panel before; Escape now toggles it.
-        if (Input.GetKeyDown(KeyCode.Escape) && !isGameOver)
+        // Escape or P toggles the pause panel (in a browser Escape also leaves fullscreen).
+        if ((Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P)) && !isGameOver)
         {
             if (isGamePaused) ResumeGame();
             else PauseGame();
@@ -143,6 +155,12 @@ public class GameManager : MonoBehaviour
     public void QuitGame()
     {
         Debug.Log("Quitting the game...");
+#if UNITY_WEBGL && !UNITY_EDITOR
+        // Application.Quit does nothing in a browser; go back to the main menu instead.
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MainMenu");
+#else
         Application.Quit();
+#endif
     }
 }
