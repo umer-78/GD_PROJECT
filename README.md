@@ -114,3 +114,7 @@ Collect every coin to open the exit door, then walk into the exit to finish the 
 > textures) are not shipped in this repository. Null references are handled at runtime;
 > re-import the packs from the Asset Store for full visuals and sound. Without them the
 > Unity build runs without its art, which is why the browser version is a separate port.
+
+## Licence
+
+MIT licence (see [LICENSE](LICENSE)).
