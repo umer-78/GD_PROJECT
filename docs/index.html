@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-scene="game" data-fx-compact="">
+<html lang="en" data-scene="maze" data-fx-compact="" data-look="cinzel" data-hero="band" data-card="soft" data-motif="topo" data-backdrop="stars">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,8 +10,8 @@
   <meta property="og:url" content="https://umer-78.github.io/GD_PROJECT/">
   <meta name="twitter:card" content="summary">
   <meta name="description" content="A 3D maze game: five temple levels, sentries whose sight you can see, spike traps and coins that open the exit. Designed in Unity (C#), with a complete browser version in three.js for keyboard, touch or gamepad.">
-  <meta name="theme-color" content="#2563eb" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0a0c10" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#a16812" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#160e05" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%232563eb'/><stop offset='1' stop-color='%237c3aed'/></linearGradient></defs><rect width='32' height='32' rx='8' fill='url(%23g)'/><text x='16' y='22' font-size='16' text-anchor='middle' fill='white' font-family='system-ui' font-weight='bold'>M</text></svg>">
   <style>
     :root {
@@ -235,7 +235,7 @@ html.mk-pre header.top, html.mk-pre main section, html.mk-pre section.card, html
 <script>(function(){try{if(!(matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)){var r=document.documentElement;r.classList.add('mk-pre');setTimeout(function(){r.classList.remove('mk-pre')},2200)}}catch(e){}})();</script>
 <!-- /motion-kit:head -->
 <!-- fx:v2 -->
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" id="fx-fonts">
 <link rel="stylesheet" href="fx.css">
 <style>:root { --fx-2: #06b6d4; --fx-3: #f59e0b; }</style>
 <!-- /fx:v2 -->
@@ -249,6 +249,11 @@ html.mk-pre header.top, html.mk-pre main section, html.mk-pre section.card, html
 <meta property="og:image:alt" content="Treasure Hunt: 3D Maze Game: the live demo">
 <meta name="twitter:card" content="summary_large_image">
 <!-- /og -->
+<style id="fx-look">:root[data-look] { --font: 'Inter', system-ui, -apple-system, "Segoe UI", sans-serif; --fx-display: 'Cinzel', Georgia, serif; --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; --fx-display-weight: 800; --fx-tracking: 0.01em; --fx-title-case: none; --fx-radius: 6px; --fx-hero-radius: 16px; --fx-control-radius: 4px; --accent: #a16812; --accent-hover: #8a5810; --accent-soft: #ffefde; --accent-glow: rgb(161 104 18 / 0.16); --on-accent: #ffffff; --fx-2: #617de6; --fx-3: #55b75b; --bg: #fef8f1; --bg-elevated: #fffdfb; --surface: #fffefd; --surface-2: #faf2ea; --surface-3: #f2eae0; --border: #e6dcd2; --border-strong: #cdc2b7; --line: #e6dcd2; }
+@media (prefers-color-scheme: dark) { :root[data-look]:not([data-theme="light"]) { --accent: #db8c08; --accent-hover: #f09f2b; --accent-soft: rgb(219 140 8 / 0.14); --accent-glow: rgb(219 140 8 / 0.2); --on-accent: #1a0f03; --fx-2: #94adfb; --fx-3: #81d583; --bg: #160e05; --bg-elevated: #1d140b; --surface: #21170d; --surface-2: #292015; --surface-3: #33291e; --border: #372f25; --border-strong: #494137; --line: #372f25; } }
+:root[data-look][data-theme="dark"] { --accent: #db8c08; --accent-hover: #f09f2b; --accent-soft: rgb(219 140 8 / 0.14); --accent-glow: rgb(219 140 8 / 0.2); --on-accent: #1a0f03; --fx-2: #94adfb; --fx-3: #81d583; --bg: #160e05; --bg-elevated: #1d140b; --surface: #21170d; --surface-2: #292015; --surface-3: #33291e; --border: #372f25; --border-strong: #494137; --line: #372f25; }</style>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.min.js" data-fx>
+<link rel="modulepreload" href="fx3d.js" data-fx>
 </head>
 <body>
   <noscript><p style="margin:16px;padding:12px 16px;border-radius:8px;background:#fff7ed;color:#9a3412;border:1px solid #fdba74;font-family:system-ui,sans-serif">This interactive demo requires JavaScript. Please enable it to run the demo in your browser.</p></noscript>
